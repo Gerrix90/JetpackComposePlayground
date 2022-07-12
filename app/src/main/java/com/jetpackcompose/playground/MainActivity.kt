@@ -45,8 +45,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-        
 
+
+            drawPathAnimation()
         }
     }
 

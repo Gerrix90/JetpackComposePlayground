@@ -45,79 +45,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-
-
-            drawPathAnimation()
         }
     }
-
-
-
 }
 
-@Composable
-fun drawPathAnimation() {
-    val ACTION_IDLE = 0
-    val ACTION_DOWN = 1
-    val ACTION_MOVE = 2
 
 
-    val path = remember { Path() }
-    var eventState by remember { mutableStateOf(ACTION_IDLE) }
-
-    val drawModifier = Modifier
-        .fillMaxWidth()
-        .height(400.dp)
-        .background(Color.Yellow)
-        .clipToBounds()
-
-
-    var targetIndexValue by remember {
-        mutableStateOf(0)
-    }
-
-    val currentIndex by animateIntAsState(
-        targetValue = targetIndexValue,
-        animationSpec = tween(7000, easing = LinearEasing)
-    )
-
-    val points = parsePoint()
-    val pointsCopy = mutableListOf<Offset>()
-
-    LaunchedEffect(Unit) {
-        targetIndexValue = points.size - 1
-    }
-
-
-    eventState = ACTION_DOWN
-
-
-    Canvas(modifier = drawModifier) {
-
-        pointsCopy.add(points.get(currentIndex))
-
-        when (eventState) {
-            ACTION_DOWN -> {
-                path.moveTo(pointsCopy.get(0).x, pointsCopy.get(0).y)
-                eventState = ACTION_MOVE
-
-            }
-            ACTION_MOVE -> {
-                path.lineTo(pointsCopy.get(currentIndex).x, pointsCopy.get(currentIndex).y)
-
-            }
-
-            else -> Unit
-        }
-
-        drawPath(
-            color = Color.Red,
-            path = path,
-            style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-        )
-    }
-
-}
 
 @Composable
 fun ImagePicker() {

@@ -9,6 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -22,15 +24,158 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.consumePositionChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.google.gson.JsonParser
 import org.json.JSONArray
+
+@Composable
+private fun drawPathUsingTouchEvent() {
+    val ACTION_IDLE = 0
+    val ACTION_DOWN = 1
+    val ACTION_MOVE = 2
+    val ACTION_UP = 3
+
+    val path = remember { Path() }
+    var motionEvent by remember { mutableStateOf(ACTION_IDLE) }
+    var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
+
+    val drawModifier = Modifier
+        .fillMaxWidth()
+        .height(400.dp)
+        .background(Color.Yellow)
+        .clipToBounds()
+        .pointerInput(Unit) {
+            forEachGesture {
+                awaitPointerEventScope {
+
+                    // Wait for at least one pointer to press down, and set first contact position
+                    val down: PointerInputChange = awaitFirstDown().also {
+                        motionEvent = ACTION_DOWN
+                        currentPosition = it.position
+                    }
+
+
+                    do {
+                        // This PointerEvent contains details including events, id, position and more
+                        val event: PointerEvent = awaitPointerEvent()
+
+                        event.changes
+                            .forEachIndexed { index: Int, pointerInputChange: PointerInputChange ->
+                                // This necessary to prevent other gestures or scrolling
+                                // when at least one pointer is down on canvas to draw
+                                pointerInputChange.consumePositionChange()
+                            }
+
+                        motionEvent = ACTION_MOVE
+                        currentPosition = event.changes.first().position
+                    } while (event.changes.any { it.pressed })
+
+                    motionEvent = ACTION_UP
+                }
+            }
+        }
+
+
+
+
+    Canvas(modifier = drawModifier) {
+
+        when (motionEvent) {
+            ACTION_DOWN -> {
+                path.moveTo(currentPosition.x, currentPosition.y)
+            }
+            ACTION_MOVE -> {
+
+                if (currentPosition != Offset.Unspecified) {
+                    path.lineTo(currentPosition.x, currentPosition.y)
+                }
+            }
+
+            ACTION_UP -> {
+                path.lineTo(currentPosition.x, currentPosition.y)
+                // Change state to idle to not draw in wrong position
+                // if recomposition happens
+                motionEvent = ACTION_IDLE
+            }
+
+            else -> Unit
+        }
+
+        drawPath(
+            color = Color.Red,
+            path = path,
+            style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+    }
+}
+@Composable
+fun drawPathAnimation() {
+    val ACTION_IDLE = 0
+    val ACTION_DOWN = 1
+    val ACTION_MOVE = 2
+
+    val path = remember { Path() }
+    var eventState by remember { mutableStateOf(ACTION_IDLE) }
+
+    var drawModifier =
+        Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+            .background(Color.Yellow)
+            .clipToBounds()
+
+    var targetIndexValue by remember {
+        mutableStateOf(0)
+    }
+
+    val currentIndexValue by animateIntAsState(
+        targetValue = targetIndexValue,
+        animationSpec = tween(7000, easing = LinearEasing)
+    )
+
+    val points = parsePoint()
+    val pointsCopy = mutableListOf<Offset>()
+
+    LaunchedEffect(Unit) {
+        targetIndexValue = points.size - 1
+    }
+
+    eventState = ACTION_DOWN
+
+    Canvas(modifier = drawModifier) {
+        pointsCopy.add(points.get(currentIndexValue))
+
+        when (eventState) {
+            ACTION_DOWN -> {
+                path.moveTo(pointsCopy.get(0).x, pointsCopy.get(0).y)
+                eventState = ACTION_MOVE
+            }
+            ACTION_MOVE -> {
+                path.lineTo(
+                    pointsCopy.get(currentIndexValue).x,
+                    pointsCopy.get(currentIndexValue).y
+                )
+            }
+            else -> Unit
+        }
+
+        drawPath(
+            color = Color.Red,
+            path = path,
+            style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+    }
+}
+
 
 @Composable
 fun drawPointsAnimation() {

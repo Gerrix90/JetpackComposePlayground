@@ -1,11 +1,8 @@
 package com.jetpackcompose.playground
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,12 +30,41 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.google.gson.JsonParser
 import org.json.JSONArray
 
+
+
 @Composable
-private fun drawPathUsingTouchEvent() {
+fun slideInSlideOutAnimation() {
+    Column(modifier = Modifier.fillMaxSize()) {
+        var isVisible by remember { mutableStateOf(true) }
+
+        Button(onClick = {
+            isVisible = !isVisible
+        }) {
+            Text(text = if (isVisible) "Slide out" else "Slide in")
+        }
+        AnimatedVisibility(visible = isVisible, enter = slideIn(initialOffset = {
+            IntOffset(it.width, it.height / 2)
+        }, animationSpec = tween(2000, easing = LinearEasing)), exit = slideOut(targetOffset = {
+            IntOffset(-it.width, it.height / 2)
+        }, animationSpec = tween(2000, easing = LinearEasing))) {
+
+            Box(
+                modifier = Modifier
+                    .background(Color.Yellow)
+                    .size(400.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun drawPathUsingTouchEvent() {
     val ACTION_IDLE = 0
     val ACTION_DOWN = 1
     val ACTION_MOVE = 2
@@ -178,7 +204,7 @@ fun drawPathAnimation() {
 
 
 @Composable
-fun drawPointsAnimation() {
+fun drawPointsAnimation(modifier : Modifier =  Modifier.fillMaxSize()) {
     var targetIndexValue by remember {
         mutableStateOf(0)
     }
@@ -188,7 +214,7 @@ fun drawPointsAnimation() {
         animationSpec = tween(7000, easing = LinearEasing)
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier ) {
         val points = parsePoint()
         val pointsCopy = mutableListOf<Offset>()
 

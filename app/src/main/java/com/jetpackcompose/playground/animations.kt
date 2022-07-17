@@ -36,7 +36,53 @@ import androidx.compose.ui.unit.dp
 import com.google.gson.JsonParser
 import org.json.JSONArray
 
+@Composable
+fun rotationAnimation() {
+    val infiniteTransition = rememberInfiniteTransition()
 
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            tween(2000, easing = LinearEasing),
+            RepeatMode.Reverse
+        )
+    )
+
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+
+        Image(
+            imageVector = Icons.Default.Favorite,
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(Color.Red),
+            modifier = Modifier
+                .size(350.dp)
+                .rotate(angle)
+        )
+    }
+}
+
+@Composable
+fun infiniteTransition() {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val color = infiniteTransition.animateColor(
+        initialValue = Color.Red,
+        targetValue = Color.Yellow,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+            .padding(24.dp)
+            .background(color.value)
+    )
+}
 
 @Composable
 fun slideInSlideOutAnimation() {

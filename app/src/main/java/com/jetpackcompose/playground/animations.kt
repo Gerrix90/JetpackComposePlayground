@@ -3,17 +3,17 @@ package com.jetpackcompose.playground
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -31,10 +31,50 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.draw.rotate
+
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.gson.JsonParser
 import org.json.JSONArray
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun animateLazyColumn() {
+    var list by remember {
+
+        mutableStateOf(
+            listOf("first", "second", "third")
+        )
+    }
+
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        items(items = list, key = { it }) {
+            Text(
+                text = it,
+                color = Color.White,
+                fontSize = 24.sp,
+                modifier = Modifier.animateItemPlacement(
+                    tween(1000, easing = LinearEasing)
+                )
+            )
+        }
+    }
+
+    Button(onClick = {
+        list = list.shuffled() as MutableList<String>
+    }) {
+        Text(text = "Shuffle", color = Color.White)
+    }
+}
 
 @Composable
 fun rotationAnimation() {

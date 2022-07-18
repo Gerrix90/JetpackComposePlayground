@@ -13,12 +13,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
@@ -47,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.jetpackcompose.playground.TensorFLowHelper.imageSize
+import com.jetpackcompose.playground.ui.theme.JetPackComposePlaygroundTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -55,14 +59,17 @@ import java.io.File
 class MainActivity : ComponentActivity() {
 
 
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
-            rotationAnimation()
+            JetPackComposePlaygroundTheme {
+
+            }
+
         }
     }
-
 
 
 

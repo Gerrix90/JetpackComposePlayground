@@ -6,15 +6,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.jetpackcompose.playground.TensorFLowHelper.imageSize
 import com.jetpackcompose.playground.ui.theme.JetPackComposePlaygroundTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -36,37 +36,29 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var isSplashScreen = mutableStateOf(true)
 
-        splashScreen()
-        setContent {
-
-            JetPackComposePlaygroundTheme {
-
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
-                    Text(text = "Home Activity", color = Color.White, fontSize = 24.sp)
-                }
-            }
-
-        }
-    }
-
-    private fun splashScreen() {
-        val mutableState = mutableStateOf(true)
-
-        lifecycleScope.launch() {
-            delay(3000)
-            mutableState.value = false
+        lifecycleScope.launch(Dispatchers.Default) {
+            delay(1000)
+            isSplashScreen.value = false
         }
 
         installSplashScreen().apply {
-
-
             setKeepOnScreenCondition {
-                mutableState.value
+                isSplashScreen.value
             }
         }
+
+        setContent {
+
+            JetPackComposePlaygroundTheme {
+                alertDialog()
+            }
+
+        }
     }
+
+
 
 
 //    @Composable

@@ -1,4 +1,4 @@
-package com.jetpackcompose.playground
+package com.jetpackcompose.playground.common
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box

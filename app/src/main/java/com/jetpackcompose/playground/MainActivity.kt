@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.jetpackcompose.playground.TensorFLowHelper.imageSize
+import com.jetpackcompose.playground.common.CreateNotification
 import com.jetpackcompose.playground.ui.theme.JetPackComposePlaygroundTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -50,15 +51,25 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-
             JetPackComposePlaygroundTheme {
-                alertDialog()
+
+                val context = LocalContext.current
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
+                    Button(onClick = {
+
+                        val createNotification = CreateNotification(context, "My title", "This is the content of notification. It's not so important right now!")
+                        createNotification.showNotification()
+
+                    }) {
+
+                        Text(text = "Show notification")
+                    }
+                }
             }
 
         }
     }
-
-
 
 
 //    @Composable

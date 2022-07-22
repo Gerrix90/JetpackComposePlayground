@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -26,6 +27,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.jetpackcompose.playground.TensorFLowHelper.imageSize
 import com.jetpackcompose.playground.common.CreateNotification
+import com.jetpackcompose.playground.presenter.MainActivityViewModel
 import com.jetpackcompose.playground.ui.theme.JetPackComposePlaygroundTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -34,37 +36,28 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
+    private val viewModel : MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var isSplashScreen = mutableStateOf(true)
+//        var isSplashScreen = mutableStateOf(true)
 
-        lifecycleScope.launch(Dispatchers.Default) {
-            delay(1000)
-            isSplashScreen.value = false
-        }
+//        lifecycleScope.launch(Dispatchers.Default) {
+//            delay(1000)
+//            isSplashScreen.value = false
+//        }
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                isSplashScreen.value
+                viewModel.isSplashScreen.value
             }
         }
 
         setContent {
             JetPackComposePlaygroundTheme {
 
-                val context = LocalContext.current
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
-                    Button(onClick = {
-
-                        val createNotification = CreateNotification(context, "My title", "This is the content of notification. It's not so important right now!")
-                        createNotification.showNotification()
-
-                    }) {
-
-                        Text(text = "Show notification")
-                    }
+                    Text(text = "Home screen", color = Color.White, fontSize = 24.sp)
                 }
             }
 

@@ -12,8 +12,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,23 +34,20 @@ import com.jetpackcompose.playground.TensorFLowHelper.imageSize
 import com.jetpackcompose.playground.common.CreateNotification
 import com.jetpackcompose.playground.presenter.MainActivityViewModel
 import com.jetpackcompose.playground.ui.theme.JetPackComposePlaygroundTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel : MainActivityViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
 
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        var isSplashScreen = mutableStateOf(true)
 
-//        lifecycleScope.launch(Dispatchers.Default) {
-//            delay(1000)
-//            isSplashScreen.value = false
-//        }
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -53,11 +55,59 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+
+
         setContent {
             JetPackComposePlaygroundTheme {
 
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Home screen", color = Color.White, fontSize = 24.sp)
+                var name by remember {
+                    mutableStateOf("name")
+                }
+                var lastname by remember {
+                    mutableStateOf("lastname")
+                }
+
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextField(value = name, onValueChange = {
+                            name = it
+                        })
+
+                        TextField(value = lastname, onValueChange = {
+                            lastname = it
+                        })
+
+                        Button(onClick = {
+                            viewModel.addStudent(name, lastname)
+                        }) {
+                            Text(text = "Submit")
+                        }
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        items(items = viewModel.listStudent, key = { it.id }) {
+                            Text(
+                                text = it.lastName,
+                                color = Color.White,
+                                fontSize = 24.sp,
+                                modifier = Modifier.animateItemPlacement(
+                                    tween(1000, easing = LinearEasing)
+                                )
+                            )
+                        }
+                    }
                 }
             }
 

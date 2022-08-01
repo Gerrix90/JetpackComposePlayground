@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -20,6 +19,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,15 +30,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import com.jetpackcompose.playground.TensorFLowHelper.imageSize
-import com.jetpackcompose.playground.common.CreateNotification
 import com.jetpackcompose.playground.presenter.MainActivityViewModel
 import com.jetpackcompose.playground.ui.theme.JetPackComposePlaygroundTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -73,7 +69,9 @@ class MainActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(24.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -98,14 +96,32 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         items(items = viewModel.listStudent, key = { it.id }) {
-                            Text(
-                                text = it.lastName,
-                                color = Color.White,
-                                fontSize = 24.sp,
-                                modifier = Modifier.animateItemPlacement(
-                                    tween(1000, easing = LinearEasing)
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = it.lastName,
+                                    color = Color.White,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier.animateItemPlacement(
+                                        tween(1000, easing = LinearEasing)
+                                    )
                                 )
-                            )
+
+                                IconButton(onClick = {
+                                    viewModel.deleteStudent(it)
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
                         }
                     }
                 }

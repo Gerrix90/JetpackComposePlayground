@@ -1,7 +1,9 @@
 package com.jetpackcompose.playground.di
 
 import android.content.Context
+import com.jetpackcompose.playground.core.domain.repository.DatabaseRepository
 import com.jetpackcompose.playground.core.interactors.AddStudent
+import com.jetpackcompose.playground.core.interactors.DeleteStudent
 import com.jetpackcompose.playground.core.interactors.GetStudents
 import dagger.Module
 import dagger.Provides
@@ -17,9 +19,13 @@ object InteractorModule {
 
     @Singleton
     @Provides
-    fun getAdStudent(@ApplicationContext appContext: Context) = AddStudent(appContext)
+    fun getAdStudent(databaseRepository: DatabaseRepository) = AddStudent(databaseRepository)
 
     @Singleton
     @Provides
-    fun getStudents(@ApplicationContext appContext: Context) = GetStudents(appContext)
+    fun getStudents(databaseRepository: DatabaseRepository) = GetStudents(databaseRepository)
+
+    @Singleton
+    @Provides
+    fun getDeleteStudent(databaseRepository: DatabaseRepository) = DeleteStudent(databaseRepository)
 }

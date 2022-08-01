@@ -7,13 +7,13 @@ import com.jetpackcompose.playground.core.domain.repository.DatabaseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class GetStudents(context : Context) {
+class GetStudents(private val databaseRepository: DatabaseRepository) {
 
-    private var dao = DatabaseRepository(context).getStudentDao()
+//    private var dao = DatabaseRepository(context).getStudentDao()
 
     operator fun invoke(): Flow<DataState<List<Student>>> = flow {
 
         emit(DataState.Loading)
-        emit(DataState.Success(dao.getAllStudents()))
+        emit(DataState.Success(databaseRepository.getStudents()))
     }
 }

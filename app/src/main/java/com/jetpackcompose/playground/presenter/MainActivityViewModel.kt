@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.jetpackcompose.playground.core.data.local.db.Student
 import com.jetpackcompose.playground.core.domain.repository.DataState
 import com.jetpackcompose.playground.core.interactors.AddStudent
+import com.jetpackcompose.playground.core.interactors.DeleteStudent
 import com.jetpackcompose.playground.core.interactors.GetStudents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class MainActivityViewModel
 @Inject constructor(
     private val addStudent: AddStudent,
-    private val getStudents: GetStudents
+    private val getStudents: GetStudents,
+    private val delStudent: DeleteStudent
 ) : ViewModel() {
 
     private val _isSplashScreen = MutableStateFlow(true)
@@ -43,6 +45,21 @@ class MainActivityViewModel
                 is DataState.Success -> {
                     _listStudents.clear()
                     _listStudents.addAll(dataState.data)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+    fun deleteStudent(student: Student){
+        delStudent(student).onEach {
+            when (it) {
+                is DataState.Success -> {
+                    _listStudents.clear()
+                    _listStudents.addAll(it.data)
+
+                }
+                is DataState.Loading -> {
+                }
+                is DataState.Error -> {
                 }
             }
         }.launchIn(viewModelScope)
